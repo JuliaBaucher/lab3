@@ -1,0 +1,50 @@
+You are a senior frontend engineer. Build a single-page chatbot website (one HTML file with embedded CSS + JS) that can be hosted on GitHub Pages and talks to an AWS backend (API Gateway HTTP API + Lambda).
+
+Context / backend contract:
+- The backend is an AWS API Gateway HTTP API route: POST /chat
+- Endpoint URL: https://mjnq8gk6vh.execute-api.eu-north-1.amazonaws.com/prod/chat
+- Request body JSON: { "message": "<user text>" }
+- Response body JSON (success): { "reply": "<assistant text>" }
+- Response body JSON (error): { "error": "<string>", "details"?: "<string>" }
+- CORS is enabled for origin: https://juliabaucher.github.io
+- The Lambda handles OPTIONS preflight and returns Access-Control-Allow-Origin etc.
+- The LLM is Amazon Bedrock (Titan), but the frontend must remain generic and only depend on the API contract above.
+
+Deliverable:
+- Return ONLY the final code of one file named index.html (no extra commentary).
+- Use clean, modern UI (CV-website style), responsive on mobile and desktop.
+- Layout:
+  - Header with title: "Julia Baucher – AI CV Assistant"
+  - Small subtitle: "Ask me about experience, projects, ML/GenAI, logistics, and product leadership."
+  - Chat area with message bubbles (user on right, assistant on left), timestamps optional.
+  - Input box + Send button
+  - "Enter" sends; Shift+Enter creates a newline.
+  - Loading indicator while waiting for reply (e.g., animated dots).
+  - Error handling:
+    - If fetch fails or backend returns {error}, show an error bubble (friendly) and keep the user message in the chat.
+  - Accessibility:
+    - Proper contrast, focus states, ARIA labels for input and send button.
+
+Functional requirements:
+- Use fetch() to call the endpoint with:
+  - method: POST
+  - headers: { "Content-Type": "application/json" }
+  - body: JSON.stringify({ message: userText })
+- Parse JSON response and display response.reply.
+- Sanitize output to prevent HTML injection (render as text, not innerHTML).
+- Add client-side guardrails:
+  - Do not allow empty messages
+  - Limit input to 4000 characters and display a small warning if exceeded
+- Add optional quality features:
+  - A "Clear chat" button that resets the conversation in the UI (client-side only)
+  - Local storage persistence (optional): restore last chat on refresh
+  - Auto-scroll to latest message
+-Include desciption of the tech architecture of the chatbot based on attached README file
+
+Style requirements:
+- Use only vanilla HTML/CSS/JS (no frameworks).
+- Use a simple, elegant design: soft background, rounded chat bubbles, subtle shadow.
+- Make sure the page works when opened directly in the browser and when hosted on GitHub Pages.
+
+Return:
+- ONLY index.html code in one code block.
