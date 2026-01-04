@@ -88,7 +88,6 @@
       padding:10px 12px;
       line-height:1.4;
     }
-
     .arch strong{color:var(--text)}
 
     .chat{flex:1;overflow:auto;padding:18px}
@@ -140,7 +139,6 @@
       background:linear-gradient(180deg, rgba(37,99,235,.25), rgba(124,58,237,.18));
       font-weight:600;
     }
-
     button:disabled{opacity:.6;cursor:not-allowed}
 
     .hint{font-size:12px;color:var(--muted)}
@@ -156,7 +154,6 @@
         Ask me about experience, projects, ML/GenAI, logistics, and product leadership.
       </div>
 
-      <!-- Architecture description derived from LAB3 README -->
       <div class="arch">
         <strong>Tech architecture (LAB3):</strong><br/>
         Static frontend hosted on <strong>GitHub Pages</strong> sends user questions to an
@@ -202,7 +199,7 @@
     row.className = "row " + role;
     const bubble = document.createElement("div");
     bubble.className = "bubble" + (isError ? " error" : "");
-    bubble.textContent = text;
+    bubble.textContent = text; // safe text rendering
     row.appendChild(bubble);
     messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
@@ -218,32 +215,26 @@
 
     add("bot", "…");
 
-   
-            try {
-          
-const r = await fetch('https://by02teld6l.execute-api.eu-central-1.amazonaws.com/prod/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    message: userText  // or whatever variable holds the user's text
-  })
-});
-
-
-
-
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
 
       const data = await res.json();
-      messages.lastChild.remove();
+      messages.lastChild.remove(); // remove "…"
 
-      if(!res.ok || data.error){
-        add("bot","Sorry, an error occurred while generating the answer.",true);
-      }else{
+      if (!res.ok || data.error) {
+        const details = data?.details || data?.error || "";
+        add("bot", "Sorry, an error occurred while generating the answer. " + details, true);
+      } else {
         add("bot", data.reply);
       }
-    }catch(e){
+    } catch (e) {
       messages.lastChild.remove();
-      add("bot","Network or CORS error. Please try again.",true);
+      add("bot", "Network or CORS error. Please try again.", true);
+      console.error("Fetch failed:", e);
     }
   }
 
